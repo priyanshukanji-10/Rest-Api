@@ -7998,5 +7998,29 @@
     "email": "rebbinsrr@opera.com",
     "gender": "Male",
     "jobtitle": "Teacher"
+  },
+  {
+    "id": 1001,
+    "first_name": "Priyanshu",
+    "last_name": "Kanji",
+    "email": "priyanshukanji0@gmail.com",
+    "gender": "Male",
+    "jobtitle": "Software Dev"
+  },
+  {
+    "id": 1002,
+    "first_name": "Thomas",
+    "last_name": "Shelby",
+    "email": "thomasshelby@shelbycompanyltd",
+    "gender": "Male",
+    "jobtitle": "Gangstar"
+  },
+  {
+    "id": 1003,
+    "first_name": "Arthur",
+    "last_name": "Shelby",
+    "email": "arthurshelby@shelbycompanyltd",
+    "gender": "Male",
+    "jobtitle": "Gangstar"
   }
 ]

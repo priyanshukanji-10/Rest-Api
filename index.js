@@ -6,6 +6,17 @@ const users = require("./MOCK_DATA.json");
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+  fs.appendFile(
+    "./log.txt",
+    `\n${Date.now()}:${req.method}:${req.path}${req.ip}`,
+    (err) => {
+      console.log("log file appended");
+    }
+  );
+  next();
+});
+
 // Routes
 app.get("/users", (req, res) => {
   //Server side rendering

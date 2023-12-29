@@ -880,14 +880,6 @@
     "jobtitle": "Project Manager"
   },
   {
-    "id": 111,
-    "first_name": "Delcina",
-    "last_name": "Simkovich",
-    "email": "dsimkovich32@liveinternet.ru",
-    "gender": "Female",
-    "jobtitle": "Registered Nurse"
-  },
-  {
     "id": 112,
     "first_name": "Julienne",
     "last_name": "Liverseege",
@@ -8013,7 +8005,7 @@
     "last_name": "Shelby",
     "email": "thomasshelby@shelbycompanyltd",
     "gender": "Male",
-    "jobtitle": "Buisness Man"
+    "jobtitle": "Horse Rider"
   },
   {
     "id": 1003,
@@ -8038,6 +8030,14 @@
     "email": "arthurshelby@shelbycompanyltd",
     "gender": "Male",
     "jobtitle": "Gangstar"
+  },
+  {
+    "id": 1005,
+    "first_name": "Micheal",
+    "last_name": "Grey",
+    "email": "michealgrey@shelbycompanyltd",
+    "gender": "Male",
+    "jobtitle": "Accountant"
   },
   {
     "id": 1006,

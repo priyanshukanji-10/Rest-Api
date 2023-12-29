@@ -29,17 +29,39 @@ app
     return res.json(user);
   })
   .patch((req, res) => {
-    //add patch
-    return res.json({ status: "Pending" });
+    const body = req.body;
+    const id = Number(req.params.id);
+    const user = users.find((user) => user.id === id);
+    Object.assign(user, body);
+    fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), () => {
+      return res.json({ status: "new user added", id: users.length });
+    });
+    res.send({ status: "User Updated" });
+    console.log(body);
   })
   .delete((req, res) => {
-    //ToDo: Add delete task
-    return res.json({ status: "Pending" });
+    const id = Number(req.params.id);
+    const index = users.findIndex((user) => user.id === id);
+    if (index !== -1) {
+      users.splice(index, 1);
+      fs.writeFile("./MOCK_Data.json", JSON.stringify(users), (err, data) => {
+        if (err) {
+          console.error("Error writing to file:", err);
+          return res
+            .status(500)
+            .json({ status: "error", message: "Internal Server Error" });
+        } else {
+          return res
+            .status(404)
+            .json({ status: "error", message: "User not found" });
+        }
+      });
+    }
   });
 app.post("/api/users", (req, res) => {
   const body = req.body;
   users.push({ id: users.length + 1, ...body });
-  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
+  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), () => {
     return res.json({ status: "new user added", id: users.length });
   });
   console.log("Body", body);

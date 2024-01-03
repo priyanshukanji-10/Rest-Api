@@ -2,58 +2,106 @@ const express = require("express");
 const fs = require("fs");
 const app = express();
 const PORT = 5000;
-const users = require("./MOCK_DATA.json");
-
+const mongoose = require("mongoose");
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
-  let logMessage = `\n${Date.now()}:${req.method}:${req.path}${
-    req.ip
-  } Status code of this req is ${res.statusCode}`;
+  let logMessage = `\n${Date.now()}:${req.method}:${req.path}${req.ip}`;
   fs.appendFile("./log.txt", logMessage, (err) => {
     console.log("log file appended");
   });
   next();
 });
+// Connention To mongoDB
+mongoose.connect("mongodb://localhost:27017/rest-api-db");
+//Schema
+const userSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    jobTitle: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+  },
+  { timestamps: true }
+);
+
+//Creating Model
+const User = mongoose.model("user", userSchema);
 
 // Routes
-app.get("/users", (req, res) => {
+app.get("/users", async (req, res) => {
   //Server side rendering
+  const dbAllUsers = await User.find({});
   const html = `
   <ul> 
- ${users.map((user) => `<li>${user.first_name}</li>`).join("")}
+  ${dbAllUsers.map((user) => `<li>${user.firstName}</li>`).join("")}
   </ul>
   `;
   res.send(html);
 });
 //Restful API
 
-app.get("/api/users", (req, res) => {
-  return res.json(users);
+app.get("/api/users", async (req, res) => {
+  const dbAllUsers = await User.find({});
+  return res.json(dbAllUsers);
 });
 app
   .route("/api/users/:id")
-  .get((req, res) => {
-    const id = Number(req.params.id);
-    const user = users.find((user) => user.id === id);
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-    }
-    return res.json(user);
+  .get(async (req, res) => {
+    const id = req.params.id;
+
+    await User.findById(id)
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        return res.status(200).json(user);
+      })
+      .catch((error) => {
+        console.error("Error fetching user:", error);
+        return res
+          .status(500)
+          .json({ status: "error", error: "Failed to retrieve user" });
+      });
   })
-  .patch((req, res) => {
-    const body = req.body;
-    const id = Number(req.params.id);
-    const user = users.find((user) => user.id === id);
-    Object.assign(user, body);
-    fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), () => {
-      return res
-        .status(202)
-        .json({ status: "new user added", id: users.length });
-    });
-    res.send({ status: "User Updated" });
-    console.log(body);
+
+  .patch(async (req, res) => {
+    const id = req.params.id;
+
+    await User.findByIdAndUpdate(id, {
+      firstName: req.body.first_name,
+      lastName: req.body.last_name,
+      email: req.body.email,
+      gender: req.body.gender,
+      jobTitle: req.body.jobtitle,
+    })
+      .then(() => {
+        return res.status(200).json({ status: "user updated" });
+      })
+      .catch((error) => {
+        console.error("Error updating user:", error);
+        return res
+          .status(500)
+          .json({ status: "error", error: "Failed to update user" });
+      });
   })
+
   .delete((req, res) => {
     const id = Number(req.params.id);
     const index = users.findIndex((user) => user.id === id);
@@ -73,7 +121,7 @@ app
       });
     }
   });
-app.post("/api/users", (req, res) => {
+app.post("/api/users", async (req, res) => {
   const body = req.body;
   if (
     !body.first_name ||
@@ -84,15 +132,26 @@ app.post("/api/users", (req, res) => {
   ) {
     res.status(400).json({ Error: "All fields are req..." });
   } else {
-    users.push({ id: users.length + 1, ...body });
-    fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), () => {
+    try {
+      const newUser = await User.create({
+        firstName: body.first_name,
+        lastName: body.last_name,
+        email: body.email,
+        gender: body.gender,
+        jobTitle: body.jobtitle,
+      });
+      console.log("Body", body);
+
+      return res.status(201).json({ status: "new user added", user: newUser });
+    } catch (error) {
+      console.error("Error creating user:", error);
       return res
-        .status(201)
-        .json({ status: "new user added", id: users.length });
-    });
-    console.log("Body", body);
+        .status(500)
+        .json({ status: "error", error: "Failed to add new user" });
+    }
   }
 });
+
 app.listen(PORT, () => {
   console.log(`Server started at PORT:${PORT}`);
 });

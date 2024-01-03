@@ -10,3 +10,7 @@
 1703863601756:POST:/api/users::1
 1703863658096:POST:/api/users::1
 1703863670736:POST:/api/users::1
+1704276115188:GET:/api/users/100000::1
+1704276325949:GET:/api/users/100000::1
+1704278906282:POST:/api/users::1 Status code of this req is 200
+1704279051100:POST:/api/users::1 Status code of this req is 200

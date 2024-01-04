@@ -102,25 +102,25 @@ app
       });
   })
 
-  .delete((req, res) => {
-    const id = Number(req.params.id);
-    const index = users.findIndex((user) => user.id === id);
-    if (index !== -1) {
-      users.splice(index, 1);
-      fs.writeFile("./MOCK_Data.json", JSON.stringify(users), (err, data) => {
-        if (err) {
-          console.error("Error writing to file:", err);
-          return res
-            .status(500)
-            .json({ status: "error", message: "Internal Server Error" });
-        } else {
-          return res
-            .status(404)
-            .json({ status: "error", message: "User not found" });
-        }
-      });
+  .delete(async (req, res) => {
+    const id = req.params.id;
+
+    try {
+      const deletedUser = await User.findByIdAndDelete(id);
+
+      if (!deletedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      return res.status(200).json({ status: "user deleted", deletedUser });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return res
+        .status(500)
+        .json({ status: "error", error: "Failed to delete user" });
     }
   });
+
 app.post("/api/users", async (req, res) => {
   const body = req.body;
   if (

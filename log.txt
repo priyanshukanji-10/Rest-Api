@@ -52,3 +52,25 @@
 1704388127383:GET:/api/users::1
 1704388158771:GET:/users::1
 1704388197958:DELETE:/api/users/65956fcc81b391314dfeb7dc::1
+1704516201275:GET:/api/users::1
+1704516256181:GET:/api/users::1
+1704516267077:GET:/users::1
+1704516278791:GET:/api/users::1
+1704516582087:GET:/api/users::1
+1704516583809:GET:/api/users::1
+1704517050744:GET:/api/users::1
+1704517228071:GET:/api/users::1
+1704518168387:GET:/api/users::1
+router.get("/users", async (req, res) => {
+  //Server side rendering
+  const dbAllUsers = await User.find({});
+  const html = `
+    <ul> 
+    ${dbAllUsers.map((user) => `<li>${user.firstName}</li>`).join("")}
+    </ul>
+    `;
+  res.send(html);
+});
+1704537078283:GET:/api/users::1
+1704537207303:GET:/api/users/6596e42d4a9e8ff317698474::1
+1704538004115:POST:/api/users::1
